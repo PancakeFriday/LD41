@@ -4,6 +4,8 @@ function Animation:new(spritesheet,w,h,row,numFrames,tbf)
 	self.spritesheet = love.graphics.newImage(spritesheet)
 	self.spritesheet:setFilter("nearest","nearest")
 	self.numFrames = numFrames
+	self.w = w
+	self.h = h
 	self.quads = {}
 	for i=0,self.spritesheet:getWidth()-1,w do
 		table.insert(self.quads, love.graphics.newQuad(i,
@@ -19,6 +21,11 @@ function Animation:new(spritesheet,w,h,row,numFrames,tbf)
 	-- time between frames
 	self.tbf = tbf or 0.3
 	self.stopped = true
+	self.mirror = 1
+end
+
+function Animation:setMirror(v)
+	self.mirror = v
 end
 
 function Animation:update(dt)
@@ -29,7 +36,7 @@ end
 
 function Animation:draw()
 	local i = math.floor(self.time/self.tbf)%self.numFrames+1
-	love.graphics.draw(self.spritesheet, self.quads[i])
+	love.graphics.draw(self.spritesheet, self.quads[i],0,0,0,self.mirror,1,self.w/2,self.h/2)
 end
 
 function Animation:stop()

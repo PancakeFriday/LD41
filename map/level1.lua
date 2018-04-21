@@ -8,7 +8,7 @@ return {
   height = 10,
   tilewidth = 16,
   tileheight = 16,
-  nextobjectid = 1,
+  nextobjectid = 2,
   properties = {},
   tilesets = {
     {
@@ -66,14 +66,28 @@ return {
     },
     {
       type = "objectgroup",
-      name = "Objektebene 1",
+      name = "Collisions",
       visible = true,
       opacity = 1,
       offsetx = 0,
       offsety = 0,
       draworder = "topdown",
       properties = {},
-      objects = {}
+      objects = {
+        {
+          id = 1,
+          name = "",
+          type = "",
+          shape = "rectangle",
+          x = 0,
+          y = 112,
+          width = 480,
+          height = 48,
+          rotation = 0,
+          visible = true,
+          properties = {}
+        }
+      }
     }
   }
 }

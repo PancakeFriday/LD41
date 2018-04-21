@@ -2,6 +2,8 @@ Object = require "classic"
 lume = require "lume"
 Animation = require "animation"
 
+DEBUG = true
+
 local Player = require "player"
 local Map = require "map"
 
@@ -24,4 +26,11 @@ function love.draw()
 	Map:draw()
 
 	love.graphics.pop()
+end
+
+function love.keypressed(key)
+	if key == "d" then
+		DEBUG = not DEBUG
+	end
+	Player:keypressed(key)
 end

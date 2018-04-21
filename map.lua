@@ -11,7 +11,11 @@ function Map:update(dt)
 end
 
 function Map:draw()
-	self.map:draw()
+	for i,v in pairs(self.map.layers) do
+		if v.type == "tilelayer" then
+			self.map:drawTileLayer(i)
+		end
+	end
 end
 
 return Map()

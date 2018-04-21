@@ -25,6 +25,7 @@ function Map:new()
 			table.remove(self.randomtext, i)
 		end
 	end
+	self.randomtext = lume.shuffle(self.randomtext)
 	self.randomtextit = 1
 end
 
@@ -42,8 +43,8 @@ function Map:loadCollisions()
 end
 
 function Map:findDialogPosition(text)
-	local w,h = Dialogbox.getDimensions("ttetet")
-	return self.player.x-w/2, self.player.y-h
+	local w,h = Dialogbox.getDimensions(text)
+	return self.player.x-w/2, self.player.y-h-16
 end
 
 function Map:getRandomText()
@@ -52,9 +53,7 @@ function Map:getRandomText()
 end
 
 function Map:update(dt)
-	self.time = self.time + dt
-
-	if math.floor(self.time) % 10 == 0 then
+	if math.floor(self.time) % 2 == 0 then
 		if self.insertDialog then
 			local t = self:getRandomText()
 			local x,y = self:findDialogPosition(t)
@@ -74,6 +73,8 @@ function Map:update(dt)
 		v:update(dt)
 	end
 	if not dialogrunning then
+		self.time = self.time + dt
+
 		self.player:update(dt)
 		self.map:update(dt)
 	end
@@ -86,7 +87,7 @@ function Map:draw()
 		end
 
 		for i,v in pairs(self.map.layers) do
-			if v.type == "tilelayer" and v.name:starts("bac-") then
+			if v.type == "tilelayer" and not v.name:starts("for-") then
 				self.map:drawTileLayer(i)
 			end
 		end

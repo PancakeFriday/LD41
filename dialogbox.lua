@@ -8,7 +8,7 @@ function Dialogbox.getDimensions(text)
 	numlines = #numlines
 	local maxx = math.min(MAXWIDTH, math.floor(textwidth/(16*4)))
 	local maxy = math.ceil(numlines/2)
-	if maxy <= 1 then
+	if numlines == 1 then
 		maxy = maxy - 1
 	end
 
@@ -51,7 +51,7 @@ function Dialogbox:draw()
 	numlines = #numlines
 
 	local maxx = math.min(MAXWIDTH, math.floor(textwidth/(16*4)))
-	local maxy = math.ceil(numlines/2)
+	local maxy = math.max(0,numlines - 2)
 
 	love.graphics.push()
 	love.graphics.translate(self.x, self.y)
@@ -64,8 +64,7 @@ function Dialogbox:draw()
 	-- top right
 	love.graphics.draw(self.img, self.quads[0][2],(maxx+1)*16,0)
 
-	local yoff = 0
-	if maxy > 1 then
+	if numlines > 2 then
 		-- left border
 		for i=1,maxy do
 			love.graphics.draw(self.img, self.quads[1][0],0,i*16)
@@ -74,9 +73,6 @@ function Dialogbox:draw()
 		for i=1,maxy do
 			love.graphics.draw(self.img, self.quads[1][2],(maxx+1)*16,i*16)
 		end
-	else
-		maxy = maxy - 1
-		yoff = 4
 	end
 
 	-- center
@@ -94,9 +90,11 @@ function Dialogbox:draw()
 	for i=1,maxx do
 		love.graphics.draw(self.img, self.quads[2][1],i*16,(maxy+1)*16)
 	end
+	love.graphics.setColor(0,0,0)
 	for i,v in pairs(wrappedtext) do
-		love.graphics.printUnscaled(v, 10, 6+(i-1)*FONT[40]:getHeight()/4 + yoff)
+		love.graphics.printUnscaled(v, 5, (i-1)*FONT[40]:getHeight()/4 + 4)
 	end
+	love.graphics.setColor(1,1,1)
 	love.graphics.pop()
 end
 

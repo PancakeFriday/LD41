@@ -40,7 +40,7 @@ return {
   layers = {
     {
       type = "tilelayer",
-      name = "brc-floor",
+      name = "bac-floor",
       x = 0,
       y = 0,
       width = 50,
@@ -70,7 +70,7 @@ return {
     },
     {
       type = "tilelayer",
-      name = "brc-trees",
+      name = "bac-trees",
       x = 0,
       y = 0,
       width = 50,

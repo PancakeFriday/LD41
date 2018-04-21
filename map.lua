@@ -11,10 +11,12 @@ function Map:new()
 	self.player = Player
 	self.collisions = {}
 	self:loadCollisions()
+	self:loadEnemies()
 	self.camera = Gamera.new(0, 0, self.map.width*self.map.tilewidth, self.map.height*self.map.tileheight)
 	self.camera:setScale(4)
 
 	self.dialogboxes = {}
+	self.enemies = {}
 
 	self.time = 0
 	self.insertDialog = false
@@ -29,9 +31,19 @@ function Map:new()
 	self.randomtextit = 1
 end
 
+function Map:loadEnemies()
+	for i,v in pairs(self.map.layers) do
+		if v.type == "objectgroup" and v.name == "Enemies" then
+			for j,k in pairs(v.objects) do
+			end
+		end
+	end
+end
+
 function Map:loadCollisions()
 	for i,v in pairs(self.map.layers) do
-		if v.type == "objectgroup" then
+		print(v.name)
+		if v.type == "objectgroup" and v.name == "Collisions" then
 			for j,k in pairs(v.objects) do
 				local x,y = k.rectangle[1].x, k.rectangle[1].y
 				local w,h = k.rectangle[3].x-x, k.rectangle[3].y-y

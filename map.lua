@@ -18,6 +18,14 @@ function Map:new()
 
 	self.time = 0
 	self.insertDialog = false
+
+	self.randomtext = lume.split(love.filesystem.read("text/garbage"), "\n")
+	for i,v in lume.ripairs(self.randomtext) do
+		if v == "" then
+			table.remove(self.randomtext, i)
+		end
+	end
+	self.randomtextit = 1
 end
 
 function Map:loadCollisions()
@@ -35,8 +43,12 @@ end
 
 function Map:findDialogPosition(text)
 	local w,h = Dialogbox.getDimensions("ttetet")
-
 	return self.player.x-w/2, self.player.y-h
+end
+
+function Map:getRandomText()
+	self.randomtextit = self.randomtextit + 1
+	return self.randomtext[self.randomtextit-1]
 end
 
 function Map:update(dt)
@@ -44,8 +56,9 @@ function Map:update(dt)
 
 	if math.floor(self.time) % 10 == 0 then
 		if self.insertDialog then
-			local x,y = self:findDialogPosition("test")
-			table.insert(self.dialogboxes, Dialogbox("test", x,y))
+			local t = self:getRandomText()
+			local x,y = self:findDialogPosition(t)
+			table.insert(self.dialogboxes, Dialogbox(t, x,y))
 			self.insertDialog = false
 		end
 	else
@@ -72,10 +85,16 @@ function Map:draw()
 			v:draw()
 		end
 
+		for i,v in pairs(self.map.layers) do
+			if v.type == "tilelayer" and v.name:starts("bac-") then
+				self.map:drawTileLayer(i)
+			end
+		end
+
 		self.player:draw()
 
 		for i,v in pairs(self.map.layers) do
-			if v.type == "tilelayer" then
+			if v.type == "tilelayer" and v.name:starts("for-") then
 				self.map:drawTileLayer(i)
 			end
 		end

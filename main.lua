@@ -6,22 +6,22 @@ local Player = require "player"
 local Map = require "map"
 
 love.graphics.setDefaultFilter("nearest","nearest")
+love.graphics.setBackgroundColor(50/255,70/255,270/255)
 
 function love.load()
 
 end
 
 function love.update(dt)
-	Map:update(dt)
 	Player:update(dt)
+	Map:update(dt)
 end
 
 function love.draw()
-	love.graphics.setBackgroundColor(5/255,7/255,27/255)
 	love.graphics.push()
 	love.graphics.scale(4,4)
-	Map:draw()
 	Player:draw()
+	Map:draw()
 
 	love.graphics.pop()
 end

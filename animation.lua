@@ -22,6 +22,8 @@ function Animation:new(spritesheet,w,h,row,numFrames,tbf)
 	self.tbf = tbf or 0.3
 	self.stopped = true
 	self.mirror = 1
+
+	self.done = nil
 end
 
 function Animation:setMirror(v)
@@ -29,9 +31,18 @@ function Animation:setMirror(v)
 end
 
 function Animation:update(dt)
+	local i = math.floor(self.time/self.tbf)
+	if type(self.done) == "function" and i > self.numFrames then
+		self:stop()
+		self.done()
+	end
 	if not self.stopped then
 		self.time = self.time + dt
 	end
+end
+
+function Animation:setDone(f)
+	self.done = f
 end
 
 function Animation:draw()

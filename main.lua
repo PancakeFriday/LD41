@@ -2,35 +2,49 @@ Object = require "classic"
 lume = require "lume"
 Animation = require "animation"
 
-DEBUG = true
+DEBUG = false
 
 local Player = require "player"
 local Map = require "map"
 
+FONT = {}
+for i=1,40 do
+	table.insert(FONT, love.graphics.newFont("font/LektonCode/LektonCode-Regular.ttf", i))
+	FONT[#FONT]:setFilter("nearest","nearest")
+end
+
 love.graphics.setDefaultFilter("nearest","nearest")
-love.graphics.setBackgroundColor(50/255,70/255,270/255)
+love.graphics.setBackgroundColor(35/255,17/255,43/255)
+
+function love.graphics.printUnscaled(...)
+	local args = {...}
+	love.graphics.push()
+	local s = Map.camera:getScale()
+	local px, py = Map.camera:getPosition()
+	love.graphics.translate(-args[2]-px, -args[3]-py)
+	love.graphics.scale(1/s, 1/s)
+	love.graphics.translate((args[2]*s+px*s), (args[3]*s+py*s))
+	args[2] = args[2]*s
+	args[3] = args[3]*s
+	love.graphics.print(unpack(args))
+	love.graphics.pop()
+end
 
 function love.load()
 
 end
 
 function love.update(dt)
-	Player:update(dt)
 	Map:update(dt)
 end
 
 function love.draw()
-	love.graphics.push()
-	love.graphics.scale(4,4)
-	Player:draw()
 	Map:draw()
-
-	love.graphics.pop()
 end
 
 function love.keypressed(key)
 	if key == "d" then
 		DEBUG = not DEBUG
 	end
-	Player:keypressed(key)
+	Map:keypressed(key)
 end

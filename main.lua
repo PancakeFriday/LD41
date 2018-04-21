@@ -17,6 +17,7 @@ function love.update(dt)
 end
 
 function love.draw()
+	love.graphics.setBackgroundColor(5/255,7/255,27/255)
 	love.graphics.push()
 	love.graphics.scale(4,4)
 	Map:draw()

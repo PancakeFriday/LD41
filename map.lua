@@ -73,9 +73,11 @@ function Map:update(dt)
 		v:update(dt)
 	end
 	if not dialogrunning then
-		self.time = self.time + dt
 
 		self.player:update(dt)
+		if self.player.wasMoving then
+			self.time = self.time + dt
+		end
 		self.map:update(dt)
 	end
 end

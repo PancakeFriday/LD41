@@ -72,6 +72,12 @@ function Player:move(mx,my)
 		self.currentAnim:stop()
 		self.currentAnim:reset()
 	end
+
+	if mx ~= 0 or my ~= 0 then
+		self.wasMoving = true
+	else
+		self.wasMoving = false
+	end
 end
 
 function Player:update(dt)

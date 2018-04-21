@@ -2,6 +2,7 @@ local Animation = Object:extend()
 
 function Animation:new(spritesheet,w,h,row,numFrames,tbf)
 	self.spritesheet = love.graphics.newImage(spritesheet)
+	self.spritesheet:setDefaultFilter("nearest","nearest")
 	self.numFrames = numFrames
 	self.quads = {}
 	for i=0,self.spritesheet:getWidth()-1,w do

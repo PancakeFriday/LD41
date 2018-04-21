@@ -2,21 +2,34 @@ local sti = require "sti"
 local HC = require "hardoncollider"
 local Gamera = require "gamera"
 local Player = require "player"
+local Enemyfactory = require "enemy"
 local Dialogbox = require "dialogbox"
 
 local Map = Object:extend()
 
+local in_table = function(a,t)
+	for i,v in pairs(t) do if a == v then return true end return false end
+end
+
 function Map:new()
 	self.map = sti("map/level1.lua")
+	local t = {}
+	for i,v in lume.ripairs(self.map.layers) do
+		if not in_table(v.name, t) then
+			table.insert(t, v.name)
+		else
+			table.remove(self.map.layers,i)
+		end
+	end
 	self.player = Player
 	self.collisions = {}
 	self:loadCollisions()
+	self.enemies = {}
 	self:loadEnemies()
 	self.camera = Gamera.new(0, 0, self.map.width*self.map.tilewidth, self.map.height*self.map.tileheight)
 	self.camera:setScale(4)
 
 	self.dialogboxes = {}
-	self.enemies = {}
 
 	self.time = 0
 	self.insertDialog = false
@@ -35,6 +48,10 @@ function Map:loadEnemies()
 	for i,v in pairs(self.map.layers) do
 		if v.type == "objectgroup" and v.name == "Enemies" then
 			for j,k in pairs(v.objects) do
+				local e = Enemyfactory:get(k.name,k.x,k.y)
+				if e then
+					table.insert(self.enemies, e)
+				end
 			end
 		end
 	end
@@ -42,7 +59,6 @@ end
 
 function Map:loadCollisions()
 	for i,v in pairs(self.map.layers) do
-		print(v.name)
 		if v.type == "objectgroup" and v.name == "Collisions" then
 			for j,k in pairs(v.objects) do
 				local x,y = k.rectangle[1].x, k.rectangle[1].y
@@ -90,6 +106,9 @@ function Map:update(dt)
 		if self.player.wasMoving then
 			self.time = self.time + dt
 		end
+		for i,v in pairs(self.enemies) do
+			v:update(dt)
+		end
 		self.map:update(dt)
 	end
 end
@@ -107,6 +126,10 @@ function Map:draw()
 		end
 
 		self.player:draw()
+
+		for i,v in pairs(self.enemies) do
+			v:draw()
+		end
 
 		for i,v in pairs(self.map.layers) do
 			if v.type == "tilelayer" and v.name:starts("for-") then

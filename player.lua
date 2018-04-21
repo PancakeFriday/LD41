@@ -10,6 +10,7 @@ function Player:new()
 		left = Animation("img/guy.png", 16, 16, 0, 4, 0.3)
 	}
 	self.currentAnim = self.animations["left"]
+	self.currentAnim:play()
 
 	self.speedx = 100
 	self.speedy = 10

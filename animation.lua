@@ -31,9 +31,8 @@ function Animation:setMirror(v)
 end
 
 function Animation:update(dt)
-	local i = math.floor(self.time/self.tbf)
-	if type(self.done) == "function" and i > self.numFrames then
-		self:stop()
+	local i = math.floor(self.time/self.tbf)%self.numFrames
+	if type(self.done) == "function" and i == 0 then
 		self.done()
 	end
 	if not self.stopped then

@@ -14,6 +14,12 @@ function Player:new()
 		jumpduring = Animation("img/guy.png", 16, 16, 1, 4, 0.2)
 	}
 
+	self.animations["jumpduring"]:setDone(function()
+		if not self.falling and not self.jumping then
+			self.currentAnim = self.animations["left"]
+		end
+	end)
+
 	self.currentAnim = self.animations["left"]
 	self.currentAnim:play()
 
@@ -23,6 +29,7 @@ function Player:new()
 
 	self.bbox = HC.rectangle(3,3,10,13)
 	self.bbox:moveTo(self.x, self.y+1)
+	self.bbox.type = "player"
 
 	self.jumping = false
 	self.falling = false
@@ -49,7 +56,6 @@ function Player:move(mx,my)
 		self.jumping = true
 	else
 		self.speedy = 0
-		self.currentAnim = self.animations["left"]
 	end
 
 	self.bbox:move(mx,0)
@@ -109,7 +115,7 @@ function Player:draw()
 end
 
 function Player:keypressed(key)
-	if key == "space" and not self.falling and not self.jumping then
+	if (key == "space" or key == "up") and not self.falling and not self.jumping then
 		self.speedy = -140
 		self.currentAnim = self.animations["jumpduring"]
 		self.currentAnim:reset()

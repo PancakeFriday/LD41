@@ -15,9 +15,9 @@ function Map:new()
 	self.camera:setScale(4)
 
 	self.dialogboxes = {}
-	table.insert(self.dialogboxes, Dialogbox("Some rubbish, I don't really know what I'm talking about. THIS IS MADNESS! Hallelujah baby girl, every damn time! AND MORE TEXT, who had thought that! But really, isn't this too much? I don't know...",100,70))
 
-	--table.insert(self.dialogboxes, Dialogbox("TEXT",0,100))
+	self.time = 0
+	self.insertDialog = false
 end
 
 function Map:loadCollisions()
@@ -27,12 +27,31 @@ function Map:loadCollisions()
 				local x,y = k.rectangle[1].x, k.rectangle[1].y
 				local w,h = k.rectangle[3].x-x, k.rectangle[3].y-y
 				table.insert(self.collisions, HC.rectangle(x,y,w,h))
+				self.collisions[#self.collisions].type = "map"
 			end
 		end
 	end
 end
 
+function Map:findDialogPosition(text)
+	local w,h = Dialogbox.getDimensions("ttetet")
+
+	return self.player.x-w/2, self.player.y-h
+end
+
 function Map:update(dt)
+	self.time = self.time + dt
+
+	if math.floor(self.time) % 10 == 0 then
+		if self.insertDialog then
+			local x,y = self:findDialogPosition("test")
+			table.insert(self.dialogboxes, Dialogbox("test", x,y))
+			self.insertDialog = false
+		end
+	else
+		self.insertDialog = true
+	end
+
 	local dialogrunning = false
 	self.camera:setPosition(self.player:getPosition())
 	for i,v in pairs(self.dialogboxes) do
@@ -41,8 +60,10 @@ function Map:update(dt)
 		end
 		v:update(dt)
 	end
-	self.player:update(dt)
-	self.map:update(dt)
+	if not dialogrunning then
+		self.player:update(dt)
+		self.map:update(dt)
+	end
 end
 
 function Map:draw()

@@ -1,6 +1,19 @@
 local Dialogbox = Object:extend()
 
 local MAXWIDTH = 10
+local TEXTSPEED = 0.03
+
+function Dialogbox.getDimensions(text)
+	local textwidth, numlines = FONT[40]:getWrap(text, (MAXWIDTH*16 + 10)*4)
+	numlines = #numlines
+	local maxx = math.min(MAXWIDTH, math.floor(textwidth/(16*4)))
+	local maxy = math.ceil(numlines/2)
+	if maxy <= 1 then
+		maxy = maxy - 1
+	end
+
+	return (maxx+2)*16, (maxy+2)*16
+end
 
 function Dialogbox:new(text,x,y)
 	self.img = love.graphics.newImage("img/dialogbox.png")
@@ -23,15 +36,15 @@ end
 
 function Dialogbox:update(dt)
 	self.time = self.time + dt
-	local numchars = math.floor((self.time)/0.03)
+	local numchars = math.floor((self.time)/TEXTSPEED)
 	if numchars >= self.text:len() then
 		self.done = true
-		print("yo")
 	end
 end
 
 function Dialogbox:draw()
-	local numchars = math.floor((self.time)/0.03)
+	local numchars = math.floor(self.time/TEXTSPEED)
+
 	love.graphics.setFont(FONT[40])
 	local textwidth, numlines = FONT[40]:getWrap(self.text, (MAXWIDTH*16 + 10)*4)
 	local _, wrappedtext = FONT[40]:getWrap(self.text:sub(1,numchars), (MAXWIDTH*16 + 10)*4)

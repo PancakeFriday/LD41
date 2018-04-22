@@ -40,7 +40,7 @@ function string.ends(String,End)
 end
 
 function love.load()
-
+	math.randomseed(os.time())
 end
 
 function love.update(dt)

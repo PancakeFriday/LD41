@@ -15,15 +15,28 @@ function Projectile:new(img, start, dir, vel, done)
 	local r = self.img:getWidth()/2
 	self.bbox = HC.circle(self.pos.x+r, self.pos.y+r, r)
 	self.bbox.type = "projectile"
+
+	self.time = 0
 end
 
 function Projectile:update(dt)
+	self.time = self.time + dt
+
 	local mby = self.dir*self.vel*dt
 	self.pos = self.pos + mby
 	self.bbox:move(mby.x, mby.y)
+
+	local called_done = false
 	for i,v in pairs(HC.collisions(self.bbox)) do
 		self.done(self, i)
+		called_done = true
 		break
+	end
+
+	if not called_done then
+		if self.time > 4 then
+			self.done(self,{})
+		end
 	end
 end
 
@@ -40,11 +53,12 @@ end
 local Dragon = Object:extend()
 
 function Dragon:new(player,x,y)
+	math.randomseed(os.time())
 	self.player = player
 	self.x = x
 	self.y = y
-	self.time = 0
-	self.rottime = 0
+	self.time = math.random()*2*math.pi
+	self.rottime = math.random()*2*math.pi
 
 	self.radius = 10
 	self.speed = 2
@@ -63,7 +77,7 @@ end
 function Dragon:update(dt)
 	self.time = self.time + dt
 	local distToPlayer = Vector().dist(Vector(self.player.x, self.player.y), Vector(self.x, self.y))
-	if math.floor(self.time) % 2 == 0 and distToPlayer < 140 then
+	if math.floor(self.time*2) % 2 == 0 and distToPlayer < 140 then
 		self.attacking = true
 	else
 		if self.attacking then
@@ -71,18 +85,15 @@ function Dragon:update(dt)
 			local dir = Vector(self.player.x, self.player.y) - start
 
 			local p = Projectile("img/dragon_proj.png", start, dir:normalized(), 70, function(s, other)
-				if other.type == "player" or other.type == "map" then
-					for i,v in pairs(self.projectiles) do
-						if v.id == s.id then
-							table.remove(self.projectiles, i)
-							break
-						end
-					end
-					if other.type == "player" then
-						self.player:hurt(0.5)
+				for i,v in pairs(self.projectiles) do
+					if v.id == s.id then
+						table.remove(self.projectiles, i)
+						break
 					end
 				end
-
+				if other.type == "player" then
+					self.player:hurt(0.5)
+				end
 			end)
 
 			self.attacking = false
@@ -108,6 +119,7 @@ function Dragon:draw()
 		yoff = math.random(0,0.4) + self.yoff
 	end
 
+	self.animation:setMirror(lume.sign(self.x - self.player.x))
 	love.graphics.push()
 	love.graphics.translate(self.x+xoff,self.y+yoff)
 	self.animation:draw()

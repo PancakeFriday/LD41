@@ -194,9 +194,9 @@ function Player:update(dt)
 
 	self.floaty = (math.sin(self.time*4)-1.8)*1
 
-	if self.jumping then
-		mx = 0
-	end
+	--if self.jumping then
+		--mx = 0
+	--end
 
 	self:move(mx+self.momentumx*dt,my,dt)
 	self.currentAnim:update(dt)

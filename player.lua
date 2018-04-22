@@ -211,14 +211,14 @@ function Player:draw(l,t,w,h)
 end
 
 function Player:keypressed(key)
-	if (key == "space" or key == "up") and not self.falling and not self.jumping then
+	if (key == "c" or key == "up") and not self.falling and not self.jumping then
 		self.speedy = -530
 		self.currentAnim = self.animations["jumpduring"]
 		self.currentAnim:reset()
 		self.currentAnim:play()
 		self.jumpheight = 0
 	end
-	if key == "lshift" then
+	if key == "x" then
 		local dir = self.currentAnim.mirror
 		if love.keyboard.isDown("left") then dir = -1
 		elseif love.keyboard.isDown("right") then dir = 1 end

@@ -173,15 +173,6 @@ function Player:update(dt)
 
 	self.floaty = (math.sin(self.time*4)-1.8)*1
 
-	if love.keyboard.isDown("space")
-	and not self.falling
-	and my ~= 0
-	and self.jumpheight >= -16
-	then
-		self.jumpheight = self.jumpheight + my
-		self.speedy = -230
-	end
-
 	if self.jumping then
 		mx = 0
 	end
@@ -212,7 +203,7 @@ end
 
 function Player:keypressed(key)
 	if (key == "c" or key == "up") and not self.falling and not self.jumping then
-		self.speedy = -530
+		self.speedy = -230
 		self.currentAnim = self.animations["jumpduring"]
 		self.currentAnim:reset()
 		self.currentAnim:play()

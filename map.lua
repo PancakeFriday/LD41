@@ -66,7 +66,7 @@ end
 
 function Map:findDialogPosition(text)
 	local w,h = Dialogbox.getDimensions(text)
-	return self.player.x-w/2, self.player.y-h-16
+	return self.player.x-(w/2*Dialogbox.scale), self.player.y-h*Dialogbox.scale-16
 end
 
 function Map:getRandomText()

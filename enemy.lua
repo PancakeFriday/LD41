@@ -35,12 +35,13 @@ function Projectile:update(dt)
 
 	if not called_done then
 		if self.time > 4 then
-			self.done(self,{})
+			self.done(self,{type="map"})
 		end
 	end
 end
 
 function Projectile:draw()
+	love.graphics.setColor(1,1,1)
 	love.graphics.draw(self.img, self.pos.x, self.pos.y, angle)
 
 	if DEBUG then
@@ -72,6 +73,9 @@ function Dragon:new(player,x,y)
 	self.attacking = false
 
 	self.projectiles = {}
+
+	self.bbox = HC.rectangle(self.x+3, self.y+3, 10, 10)
+	self.bbox.type = "enemy"
 end
 
 function Dragon:update(dt)
@@ -85,14 +89,16 @@ function Dragon:update(dt)
 			local dir = Vector(self.player.x, self.player.y) - start
 
 			local p = Projectile("img/dragon_proj.png", start, dir:normalized(), 70, function(s, other)
-				for i,v in pairs(self.projectiles) do
-					if v.id == s.id then
-						table.remove(self.projectiles, i)
-						break
+				if other.type == "player" or other.type == "map" then
+					for i,v in pairs(self.projectiles) do
+						if v.id == s.id then
+							table.remove(self.projectiles, i)
+							break
+						end
 					end
-				end
-				if other.type == "player" then
-					self.player:hurt(0.5)
+					if other.type == "player" then
+						self.player:hurt(0.5)
+					end
 				end
 			end)
 
@@ -122,11 +128,18 @@ function Dragon:draw()
 	self.animation:setMirror(lume.sign(self.x - self.player.x))
 	love.graphics.push()
 	love.graphics.translate(self.x+xoff,self.y+yoff)
+	self.bbox:moveTo(self.x+xoff, self.y+yoff)
 	self.animation:draw()
 	love.graphics.pop()
 
 	for i,v in pairs(self.projectiles) do
+		love.graphics.setColor(1,0,0)
 		v:draw()
+		love.graphics.setColor(1,1,1)
+	end
+
+	if DEBUG then
+		self.bbox:draw()
 	end
 end
 

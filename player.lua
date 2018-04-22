@@ -60,7 +60,9 @@ function Player:new()
 
 	self.speedx = 100
 	self.speedy = 50
-	self.accely = 200
+	self.accely = 400
+
+	self.momentumx = 0
 
 	self.bbox = HC.rectangle(3,3,10,13)
 	self.bbox:moveTo(self.x, self.y+1)
@@ -80,13 +82,21 @@ function Player:getPosition()
 	return self.x, self.y
 end
 
-function Player:move(mx,my)
+function Player:move(mx,my,dt)
 	self.bbox:move(0,my)
 	for i,v in pairs(HC.collisions(self.bbox)) do
-		if i.type == "map" then
+		if i.type == "map" or (i.type == "dialogbox" and my > 0 and i.damaged ~= true) then
 			self.bbox:move(0,-my)
 			my = 0
 			break
+		elseif i.type == "dialogbox" then
+			i.damaged = true
+		elseif i.type == "enemy" then
+			self.bbox:move(0,-my)
+			my = -lume.sign(my)*100*dt
+			self.bbox:move(0,my)
+			self.speedy = my/dt
+			self:hurt(0.5)
 		end
 	end
 	self.falling, self.jumping = false,false
@@ -101,10 +111,16 @@ function Player:move(mx,my)
 
 	self.bbox:move(mx,0)
 	for i,v in pairs(HC.collisions(self.bbox)) do
-		if i.type == "map" then
+		if i.type == "map" or (i.type == "dialogbox" and i.damaged ~= true) then
 			self.bbox:move(-mx,0)
 			mx = 0
 			break
+		elseif i.type == "enemy" then
+			self.bbox:move(-mx,0)
+			mx = -lume.sign(mx)*400*dt
+			self.bbox:move(mx,0)
+			self.momentumx = mx/dt
+			self:hurt(0.5)
 		end
 	end
 	self.x = self.x + mx
@@ -129,7 +145,13 @@ function Player:hurt(x)
 end
 
 function Player:update(dt)
-	self.time = self.time + dt
+	self.time = self.time + dt*3
+
+	if self.momentumx > 0 then
+		self.momentumx = math.max(self.momentumx - dt*700)
+	else
+		self.momentumx = math.min(0,self.momentumx + dt*700)
+	end
 
 	local mx, my = 0, 0
 	if love.keyboard.isDown("right") then
@@ -157,10 +179,14 @@ function Player:update(dt)
 	and self.jumpheight >= -16
 	then
 		self.jumpheight = self.jumpheight + my
-		self.speedy = -100
+		self.speedy = -230
 	end
 
-	self:move(mx,my)
+	if self.jumping then
+		mx = 0
+	end
+
+	self:move(mx+self.momentumx*dt,my,dt)
 	self.currentAnim:update(dt)
 end
 
@@ -186,11 +212,19 @@ end
 
 function Player:keypressed(key)
 	if (key == "space" or key == "up") and not self.falling and not self.jumping then
-		self.speedy = -100
+		self.speedy = -530
 		self.currentAnim = self.animations["jumpduring"]
 		self.currentAnim:reset()
 		self.currentAnim:play()
 		self.jumpheight = 0
+	end
+	if key == "lshift" then
+		local dir = self.currentAnim.mirror
+		if love.keyboard.isDown("left") then dir = -1
+		elseif love.keyboard.isDown("right") then dir = 1 end
+		if math.abs(self.momentumx) < 10 then
+			self.momentumx = dir * 400
+		end
 	end
 	if key == "k" then
 		self.health:subtract(0.5)

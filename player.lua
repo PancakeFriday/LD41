@@ -71,6 +71,7 @@ function Player:new()
 	self.jumpheight = 0
 	self.jumping = false
 	self.falling = false
+	self.dashing = false
 
 	self.time = 0
 
@@ -89,7 +90,7 @@ function Player:move(mx,my,dt)
 			self.bbox:move(0,-my)
 			my = 0
 			break
-		elseif i.type == "dialogbox" then
+		elseif i.type == "dialogbox" and self.jumping then
 			i.damaged = true
 		elseif i.type == "enemy" then
 			self.bbox:move(0,-my)
@@ -103,7 +104,7 @@ function Player:move(mx,my,dt)
 	self.y = self.y + my
 	if my > 0 then
 		self.falling = true
-	elseif my < 0 then
+	elseif my < 0 and not self.falling then
 		self.jumping = true
 	else
 		self.speedy = 0
@@ -111,10 +112,12 @@ function Player:move(mx,my,dt)
 
 	self.bbox:move(mx,0)
 	for i,v in pairs(HC.collisions(self.bbox)) do
-		if i.type == "map" or (i.type == "dialogbox" and i.damaged ~= true) then
+		if i.type == "map" or (i.type == "dialogbox" and i.damaged ~= true and not self.dashing) then
 			self.bbox:move(-mx,0)
 			mx = 0
 			break
+		elseif i.type == "dialogbox" and self.dashing then
+			i.damaged = true
 		elseif i.type == "enemy" then
 			self.bbox:move(-mx,0)
 			mx = -lume.sign(mx)*400*dt
@@ -146,6 +149,10 @@ end
 
 function Player:update(dt)
 	self.time = self.time + dt*3
+
+	if math.abs(self.momentumx) < 10 then
+		self.dashing = false
+	end
 
 	if self.momentumx > 0 then
 		self.momentumx = math.max(self.momentumx - dt*700)
@@ -210,6 +217,7 @@ function Player:keypressed(key)
 		self.jumpheight = 0
 	end
 	if key == "x" then
+		self.dashing = true
 		local dir = self.currentAnim.mirror
 		if love.keyboard.isDown("left") then dir = -1
 		elseif love.keyboard.isDown("right") then dir = 1 end

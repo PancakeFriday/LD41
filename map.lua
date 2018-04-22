@@ -70,8 +70,8 @@ function Map:findDialogPosition(text)
 end
 
 function Map:getRandomText()
-	self.randomtextit = self.randomtextit + 1
-	return self.randomtext[self.randomtextit-1]
+	self.randomtextit = (self.randomtextit)%(#self.randomtext)+1
+	return self.randomtext[self.randomtextit]
 end
 
 function Map:update(dt)
@@ -94,8 +94,7 @@ function Map:update(dt)
 		end
 		v:update(dt)
 	end
-	if not dialogrunning then
-
+	if not dialogrunning or true then
 		self.player:update(dt)
 		if self.player.wasMoving then
 			self.time = self.time + dt

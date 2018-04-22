@@ -15,14 +15,6 @@ end
 
 function Map:new()
 	self.map = sti("map/level1.lua")
-	local t = {}
-	for i,v in lume.ripairs(self.map.layers) do
-		if not in_table(v.name, t) then
-			table.insert(t, v.name)
-		else
-			table.remove(self.map.layers,i)
-		end
-	end
 	self.player = Player
 	self.collisions = {}
 	self:loadCollisions()
@@ -47,7 +39,7 @@ function Map:new()
 end
 
 function Map:loadEnemies()
-	for i,v in pairs(self.map.layers) do
+	for i,v in ipairs(self.map.layers) do
 		if v.type == "objectgroup" and v.name == "Enemies" then
 			for j,k in pairs(v.objects) do
 				local e = Enemyfactory:get(k.name,self.player,k.x,k.y)
@@ -137,7 +129,7 @@ function Map:draw()
 			end
 		end
 
-		self.player:draw()
+		self.player:draw(l,t,w,h)
 
 		for i,v in pairs(self.enemies) do
 			v:draw()

@@ -1,5 +1,40 @@
 local HC = require "hardoncollider"
 
+local Health = Object:extend()
+
+function Health:new(num)
+	self.img = love.graphics.newImage("img/hearts.png")
+	self.img:setFilter("nearest","nearest")
+	self.num_hearts = num
+	self.health = num
+	self.quads = {}
+	local w,h = self.img:getDimensions()
+	for i=0,2 do
+		table.insert(self.quads, love.graphics.newQuad(i*w/3,0,w/3,h,w,h))
+	end
+end
+
+function Health:draw(l,t,w,h)
+	love.graphics.push()
+	love.graphics.translate(l,t)
+	for i=1,self.num_hearts do
+		local q
+		if self.health-i >= 0 then
+			q = 1
+		elseif self.health-i >= -0.5 then
+			q = 2
+		else
+			q = 3
+		end
+		love.graphics.draw(self.img, self.quads[q], (i-1)*13+2, 2)
+	end
+	love.graphics.pop()
+end
+
+function Health:subtract(x)
+	self.health = math.max(0, self.health-x)
+end
+
 local Player = Object:extend()
 
 function Player:new()
@@ -35,6 +70,9 @@ function Player:new()
 	self.falling = false
 
 	self.time = 0
+
+	self.health = Health(3)
+	self.hurtTime = -100
 end
 
 function Player:getPosition()
@@ -84,6 +122,11 @@ function Player:move(mx,my)
 	end
 end
 
+function Player:hurt(x)
+	self.health:subtract(x)
+	self.hurtTime = self.time
+end
+
 function Player:update(dt)
 	self.time = self.time + dt
 
@@ -111,17 +154,24 @@ function Player:update(dt)
 	self.currentAnim:update(dt)
 end
 
-function Player:draw()
+function Player:draw(l,t,w,h)
 	love.graphics.push()
 	love.graphics.translate(self.x,self.y+self.floaty)
 	self.currentAnim:draw()
 	love.graphics.pop()
+
+	self.health:draw(l,t,w,h)
 
 	if DEBUG then
 		love.graphics.setColor(1,0,0)
 		self.bbox:draw()
 		love.graphics.setColor(1,1,1)
 	end
+
+	local alpha = (1-(self.time - self.hurtTime)/1)/4
+	love.graphics.setColor(1,0.1,0.1,alpha)
+	love.graphics.rectangle("fill",l,t,w,h)
+	love.graphics.setColor(1,1,1)
 end
 
 function Player:keypressed(key)
@@ -130,6 +180,9 @@ function Player:keypressed(key)
 		self.currentAnim = self.animations["jumpduring"]
 		self.currentAnim:reset()
 		self.currentAnim:play()
+	end
+	if key == "k" then
+		self.health:subtract(0.5)
 	end
 end
 

@@ -1,8 +1,11 @@
 local HC = require "hardoncollider"
 
 local Projectile = Object:extend()
+Projectile.idgen = 0
 
 function Projectile:new(img, start, dir, vel, done)
+	self.id = Projectile.idgen
+	Projectile.idgen = Projectile.idgen + 1
 	self.img = love.graphics.newImage(img)
 	self.pos = start
 	self.dir = dir
@@ -19,13 +22,8 @@ function Projectile:update(dt)
 	self.pos = self.pos + mby
 	self.bbox:move(mby.x, mby.y)
 	for i,v in pairs(HC.collisions(self.bbox)) do
-		if i.type == "player" then
-
-			self.done(self)
-		elseif i.type == "map" then
-
-			self.done(self)
-		end
+		self.done(self, i)
+		break
 	end
 end
 
@@ -64,20 +62,35 @@ end
 
 function Dragon:update(dt)
 	self.time = self.time + dt
-	if math.floor(self.time) % 2 == 0 then
+	local distToPlayer = Vector().dist(Vector(self.player.x, self.player.y), Vector(self.x, self.y))
+	if math.floor(self.time) % 2 == 0 and distToPlayer < 140 then
 		self.attacking = true
 	else
 		if self.attacking then
-			local dir = Vector(self.player.x, self.player.y) - Vector(self.x+self.xoff, self.y+self.yoff)
-			local p = Projectile("img/dragon_proj.png", Vector(self.x+self.xoff, self.y+self.yoff), dir:normalized(), 30, function(s)
-				local t = lume.find(self.projectiles, s)
-				table.remove(self.projectiles, t)
+			local start = Vector(self.x+self.xoff, self.y+self.yoff)-Vector(3,5)
+			local dir = Vector(self.player.x, self.player.y) - start
+
+			local p = Projectile("img/dragon_proj.png", start, dir:normalized(), 70, function(s, other)
+				if other.type == "player" or other.type == "map" then
+					for i,v in pairs(self.projectiles) do
+						if v.id == s.id then
+							table.remove(self.projectiles, i)
+							break
+						end
+					end
+					if other.type == "player" then
+						self.player:hurt(0.5)
+					end
+				end
+
 			end)
+
+			self.attacking = false
 			table.insert(self.projectiles, p)
 		end
-		self.attacking = false
 		self.rottime = self.rottime + dt
 	end
+
 	for i,v in pairs(self.projectiles) do
 		v:update(dt)
 	end

@@ -38,6 +38,10 @@ end
 local Player = Object:extend()
 
 function Player:new()
+	self.audio_hurt = love.audio.newSource("wav/hurt.wav", "static")
+	self.audio_hurt:setLooping(false)
+	self.audio_hurt:setVolume(0.3)
+
 	self.x = 50
 	self.y = 170
 	self.floaty = 0
@@ -150,6 +154,7 @@ end
 function Player:hurt(x)
 	self.health:subtract(x)
 	self.hurtTime = self.time
+	self.audio_hurt:play()
 end
 
 function Player:update(dt)

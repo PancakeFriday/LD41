@@ -44,9 +44,11 @@ end
 function Player:move(mx,my)
 	self.bbox:move(0,my)
 	for i,v in pairs(HC.collisions(self.bbox)) do
-		self.bbox:move(0,-my)
-		my = 0
-		break
+		if i.type == "map" then
+			self.bbox:move(0,-my)
+			my = 0
+			break
+		end
 	end
 	self.falling, self.jumping = false,false
 	self.y = self.y + my
@@ -60,9 +62,11 @@ function Player:move(mx,my)
 
 	self.bbox:move(mx,0)
 	for i,v in pairs(HC.collisions(self.bbox)) do
-		self.bbox:move(-mx,0)
-		mx = 0
-		break
+		if i.type == "map" then
+			self.bbox:move(-mx,0)
+			mx = 0
+			break
+		end
 	end
 	self.x = self.x + mx
 

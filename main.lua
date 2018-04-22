@@ -1,6 +1,7 @@
 Object = require "classic"
 lume = require "lume"
 Animation = require "animation"
+Vector = require "vector"
 
 DEBUG = false
 

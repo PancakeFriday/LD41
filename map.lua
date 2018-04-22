@@ -50,7 +50,7 @@ function Map:loadEnemies()
 	for i,v in pairs(self.map.layers) do
 		if v.type == "objectgroup" and v.name == "Enemies" then
 			for j,k in pairs(v.objects) do
-				local e = Enemyfactory:get(k.name,k.x,k.y)
+				local e = Enemyfactory:get(k.name,self.player,k.x,k.y)
 				if e then
 					table.insert(self.enemies, e)
 				end

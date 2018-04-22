@@ -141,6 +141,8 @@ function Map:draw()
 					love.graphics.setStencilTest("less", 1)
 					self.map:drawTileLayer(i)
 					love.graphics.setStencilTest()
+				else
+					self.map:drawTileLayer(i)
 				end
 			end
 		end

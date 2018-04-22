@@ -19,9 +19,9 @@ function Dialogbox:new(text,x,y)
 	self.img = love.graphics.newImage("img/dialogbox.png")
 	self.img:setFilter("nearest","nearest")
 	self.quads = {}
-	for y = 0,2 do
+	for y = 0,4 do
 		self.quads[y] = {}
-		for x = 0,2 do
+		for x = 0,4 do
 			self.quads[y][x] = love.graphics.newQuad(x*16,y*16,16,16,self.img:getWidth(),self.img:getHeight())
 		end
 	end
@@ -58,8 +58,22 @@ function Dialogbox:update(dt)
 end
 
 function Dialogbox:drawTile(x,y,qx,qy)
+	local maxx, maxy = self.w/16, self.h/16
 	if not self.bboxes[y][x].damaged then
 		love.graphics.draw(self.img, self.quads[qy][qx],x*16,y*16)
+	else
+		if self.bboxes[y] and self.bboxes[y][x+1] and not self.bboxes[y][x+1].damaged then
+			love.graphics.draw(self.img, self.quads[4][1], x*16, y*16)
+		end
+		if self.bboxes[y] and self.bboxes[y][x-1] and not self.bboxes[y][x-1].damaged then
+			love.graphics.draw(self.img, self.quads[4][0], x*16, y*16)
+		end
+		if self.bboxes[y+1] and self.bboxes[y+1][x] and not self.bboxes[y+1][x].damaged then
+			love.graphics.draw(self.img, self.quads[3][1], x*16, y*16)
+		end
+		if self.bboxes[y-1] and self.bboxes[y-1][x] and not self.bboxes[y-1][x].damaged then
+			love.graphics.draw(self.img, self.quads[3][0], x*16, y*16)
+		end
 	end
 end
 

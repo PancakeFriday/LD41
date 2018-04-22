@@ -132,7 +132,11 @@ function Player:move(mx,my,dt)
 			mx = -lume.sign(mx)*400*dt
 			self.bbox:move(mx,0)
 			self.momentumx = mx/dt
-			self:hurt(0.5)
+			if self.dashing then
+				i.object:hurt(0.5)
+			else
+				self:hurt(0.5)
+			end
 		end
 	end
 	self.x = self.x + mx

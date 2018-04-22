@@ -79,6 +79,11 @@ function Player:new()
 	self.hurtTime = -100
 end
 
+function Player:getStencil()
+	love.graphics.setColor(1,1,1)
+	love.graphics.circle("fill",self.x,self.y,16)
+end
+
 function Player:getPosition()
 	return self.x, self.y
 end

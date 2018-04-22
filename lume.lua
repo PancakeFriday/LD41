@@ -561,7 +561,8 @@ local serialize_map = {
     end
     stk[t] = nil
     return "{" .. table.concat(rtn, ",") .. "}"
-  end
+  end,
+  [ "userdata" ] = function() return "" end
 }
 
 setmetatable(serialize_map, {

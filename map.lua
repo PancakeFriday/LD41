@@ -136,7 +136,12 @@ function Map:draw()
 
 		for i,v in pairs(self.map.layers) do
 			if v.type == "tilelayer" and v.name:starts("for-") then
-				self.map:drawTileLayer(i)
+				if v.name == "for-secret" then
+					love.graphics.stencil(function() self.player:getStencil() end, "replace", 1)
+					love.graphics.setStencilTest("less", 1)
+					self.map:drawTileLayer(i)
+					love.graphics.setStencilTest()
+				end
 			end
 		end
 

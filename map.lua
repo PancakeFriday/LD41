@@ -14,6 +14,8 @@ local in_table = function(a,t)
 end
 
 function Map:new()
+	self.music = love.audio.newSource("wav/music.wav", "static")
+	self.music:play()
 	self.map = sti("map/level1.lua")
 	self.player = Player
 	self.collisions = {}

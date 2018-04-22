@@ -143,6 +143,88 @@ function Dragon:draw()
 	end
 end
 
+local Snake = Object:extend()
+
+function Snake:new(player,x,y)
+	self.player = player
+	self.x = x
+	self.xoff = 0
+	self.y = y
+
+	self.animations = {
+		walk = Animation("img/snake.png", 16, 16, 0, 2, 0.3),
+		attack = Animation("img/snake.png", 16, 16, 0, 2, 0.8),
+	}
+	self.animations["walk"]:play()
+
+	self.bbox = HC.rectangle(self.x, self.y+8, 16, 6)
+	self.bbox.type = "enemy"
+
+	self.gprobel = HC.rectangle(self.x-1,self.y+16,1,1)
+	self.gprober = HC.rectangle(self.x+16,self.y+16,1,1)
+
+	self.attacking = false
+	self.time = 0
+
+	self.dir = -1
+end
+
+function Snake:update(dt)
+	self.time = self.time + dt
+	self.xoff = math.sin(self.time/0.3*math.pi/2)^2
+	self.animations["walk"]:update(dt)
+	self.animations["attack"]:update(dt)
+	self:move(dt)
+end
+
+function Snake:move(dt)
+	local mx = self.dir * 20*dt
+	self.x = self.x + mx
+	self.bbox:move(mx,0)
+	self.gprobel:move(mx,0)
+	self.gprober:move(mx,0)
+
+	self.animations["walk"]:setMirror(-self.dir)
+	local foundcol = false
+	for i,v in pairs(HC.collisions(self.gprobel)) do
+		if i.type == "map" then
+			foundcol = true
+			break
+		end
+	end
+	if not foundcol then self.dir = 1 end
+	local foundcol = false
+	for i,v in pairs(HC.collisions(self.gprober)) do
+		if i.type == "map" then
+			foundcol = true
+			break
+		end
+	end
+	if not foundcol then self.dir = -1 end
+	local foundcol = false
+	for i,v in pairs(HC.collisions(self.bbox)) do
+		if i.type == "map" then
+			foundcol = true
+		end
+	end
+	if foundcol then self.dir = -self.dir end
+end
+
+function Snake:draw()
+	if not self.attacking then
+		love.graphics.push()
+		love.graphics.translate(self.x+8+self.xoff, self.y+8)
+		self.animations["walk"]:draw()
+		love.graphics.pop()
+	end
+
+	if DEBUG then
+		self.bbox:draw()
+		self.gprobel:draw()
+		self.gprober:draw()
+	end
+end
+
 local Enemyfactory = Object:extend()
 
 function Enemyfactory:new()
@@ -152,6 +234,8 @@ end
 function Enemyfactory:get(name,player,x,y)
 	if name == "dragon" then
 		return Dragon(player,x,y)
+	elseif name == "snake" then
+		return Snake(player,x,y)
 	end
 end
 

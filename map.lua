@@ -5,6 +5,8 @@ local Player = require "player"
 local Enemyfactory = require "enemy"
 local Dialogbox = require "dialogbox"
 
+local STOPDIALOG = false
+
 local Map = Object:extend()
 
 local in_table = function(a,t)
@@ -81,7 +83,7 @@ function Map:getRandomText()
 end
 
 function Map:update(dt)
-	if math.floor(self.time) % 2 == 0 then
+	if math.floor(self.time) % 2 == 0 and not STOPDIALOG then
 		if self.insertDialog then
 			local t = self:getRandomText()
 			local x,y = self:findDialogPosition(t)
@@ -114,13 +116,23 @@ function Map:update(dt)
 end
 
 function Map:draw()
-	self.camera:draw(function(l,t,w,h)
+	self.camera:draw(function(l,t,w,h,par)
+		for i,v in pairs(self.map.layers) do
+			if v.type == "tilelayer" and v.name:starts("par-") then
+				local num = tonumber(v.name:sub(5,5))
+				love.graphics.push()
+				love.graphics.translate(l/(num+1.5),0)
+				self.map:drawTileLayer(i)
+				love.graphics.pop()
+			end
+		end
+
 		for i,v in pairs(self.dialogboxes) do
 			v:draw()
 		end
 
 		for i,v in pairs(self.map.layers) do
-			if v.type == "tilelayer" and not v.name:starts("for-") then
+			if v.type == "tilelayer" and v.name:starts("bac-") then
 				self.map:drawTileLayer(i)
 			end
 		end
@@ -137,6 +149,12 @@ function Map:draw()
 			end
 		end
 
+		if STOPDIALOG then
+			love.graphics.setColor(1,0.5,0.2)
+			love.graphics.printUnscaled("No dialogs will spawn!",l,t)
+			love.graphics.setColor(1,1,1)
+		end
+
 		if DEBUG then
 			love.graphics.setColor(1,0,0)
 			for i,v in pairs(self.collisions) do
@@ -149,6 +167,9 @@ end
 
 function Map:keypressed(key)
 	self.player:keypressed(key)
+	if key == "s" then
+		STOPDIALOG = not STOPDIALOG
+	end
 end
 
 return Map()

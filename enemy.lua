@@ -87,6 +87,10 @@ function Dragon:new(player,x,y)
 	self.animation = Animation("img/dragon.png", 16, 16, 0, 2, 0.3)
 	self.animation:play()
 
+	self.anim_dying = Animation("img/dying.png", 16, 16, 0, 3, 0.3)
+	self.anim_dying:setDone(function() self.anim_dying_done = true end)
+	self.anim_dying_done = false
+
 	self.attacking = false
 
 	self.projectiles = {}
@@ -102,6 +106,7 @@ function Dragon:hurt(n)
 		self.dead = true
 		HC.remove(self.bbox)
 		self.audio_dead:play()
+		self.anim_dying:play()
 	else
 		self.audio_hit:play()
 	end
@@ -139,10 +144,12 @@ function Dragon:update(dt)
 			self.rottime = self.rottime + dt
 		end
 
-		for i,v in pairs(self.projectiles) do
-			v:update(dt)
-		end
 		self.animation:update(dt)
+	elseif not self.anim_dying_done then
+		self.anim_dying:update(dt)
+	end
+	for i,v in pairs(self.projectiles) do
+		v:update(dt)
 	end
 end
 
@@ -165,15 +172,20 @@ function Dragon:draw()
 		self.animation:draw()
 		love.graphics.pop()
 
-		for i,v in pairs(self.projectiles) do
-			love.graphics.setColor(1,0,0)
-			v:draw()
-			love.graphics.setColor(1,1,1)
-		end
-
 		if DEBUG then
 			self.bbox:draw()
 		end
+	elseif not self.anim_dying_done then
+		love.graphics.push()
+		love.graphics.translate(self.x,self.y)
+		self.anim_dying:draw()
+		love.graphics.pop()
+	end
+
+	for i,v in pairs(self.projectiles) do
+		love.graphics.setColor(1,0,0)
+		v:draw()
+		love.graphics.setColor(1,1,1)
 	end
 end
 
@@ -199,6 +211,9 @@ function Snake:new(player,x,y)
 		walk = Animation("img/snake.png", 16, 16, 0, 2, 0.3),
 		attack = Animation("img/snake.png", 16, 16, 0, 2, 0.8),
 	}
+	self.anim_dying = Animation("img/dying.png", 16, 16, 0, 3, 0.3)
+	self.anim_dying:setDone(function() self.anim_dying_done = true end)
+	self.anim_dying_done = false
 	self.animations["walk"]:play()
 
 	self.bbox = HC.rectangle(self.x, self.y+8, 16, 6)
@@ -210,6 +225,7 @@ function Snake:new(player,x,y)
 
 	self.attacking = false
 	self.time = 0
+	self.hurtTime = -100
 
 	self.dir = -1
 
@@ -218,10 +234,12 @@ end
 
 function Snake:hurt(n)
 	self.health = self.health - n
+	self.hurtTime = self.time
 	if self.health <= 0 then
 		self.dead = true
 		HC.remove(self.bbox)
 		self.audio_dead:play()
+		self.anim_dying:play()
 	else
 		self.audio_hit:play()
 	end
@@ -234,6 +252,8 @@ function Snake:update(dt)
 		self.animations["walk"]:update(dt)
 		self.animations["attack"]:update(dt)
 		self:move(dt)
+	elseif not self.anim_dying_done then
+		self.anim_dying:update(dt)
 	end
 end
 
@@ -275,7 +295,12 @@ function Snake:draw()
 		if not self.attacking then
 			love.graphics.push()
 			love.graphics.translate(self.x+8+self.xoff, self.y+8)
+
+			local alpha = ((self.time - self.hurtTime)/0.5)
+			love.graphics.setColor(1,alpha,alpha)
 			self.animations["walk"]:draw()
+			love.graphics.setColor(1,1,1)
+
 			love.graphics.pop()
 		end
 
@@ -284,6 +309,11 @@ function Snake:draw()
 			self.gprobel:draw()
 			self.gprober:draw()
 		end
+	elseif not self.anim_dying_done then
+		love.graphics.push()
+		love.graphics.translate(self.x+8+self.xoff, self.y+8)
+		self.anim_dying:draw()
+		love.graphics.pop()
 	end
 end
 

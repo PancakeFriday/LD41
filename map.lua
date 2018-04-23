@@ -4,6 +4,7 @@ local Gamera = require "gamera"
 local Player = require "player"
 local Enemyfactory = require "enemy"
 local Dialogbox = require "dialogbox"
+local Collectible = require "collectible"
 
 local STOPDIALOG = false
 
@@ -13,17 +14,28 @@ local in_table = function(a,t)
 	for i,v in pairs(t) do if a == v then return true end return false end
 end
 
+love.graphics.setBackgroundColor(35/255,17/255,43/255)
+
 function Map:new()
 	self.music = love.audio.newSource("wav/music.wav", "static")
+	self.music:setLooping(true)
+	self.loaded = false
+
+	self.camera = Gamera.new(0, 0, 1,1)
+	self.camera:setScale(4)
+end
+
+function Map:loadLevel(n)
+	self.loaded = true
 	self.music:play()
-	self.map = sti("map/level1.lua")
-	self.player = Player
+	self.map = sti(n)
 	self.collisions = {}
+	self.collectibles = {}
 	self:loadCollisions()
+	self.player = Player(self.collectibles)
+	self.camera:setWorld(0,0,self.map.width*self.map.tilewidth, self.map.height*self.map.tileheight)
 	self.enemies = {}
 	self:loadEnemies()
-	self.camera = Gamera.new(0, 0, self.map.width*self.map.tilewidth, self.map.height*self.map.tileheight)
-	self.camera:setScale(4)
 
 	self.dialogboxes = {}
 
@@ -54,13 +66,24 @@ function Map:loadEnemies()
 end
 
 function Map:loadCollisions()
-	for i,v in pairs(self.map.layers) do
+	for i,v in ipairs(self.map.layers) do
 		if v.type == "objectgroup" and v.name == "Collisions" then
 			for j,k in pairs(v.objects) do
 				local x,y = k.rectangle[1].x, k.rectangle[1].y
 				local w,h = k.rectangle[3].x-x, k.rectangle[3].y-y
 				table.insert(self.collisions, HC.rectangle(x,y,w,h))
 				self.collisions[#self.collisions].type = "map"
+			end
+		elseif v.type == "objectgroup" and v.name == "Pain-in-the-ass" then
+			for j,k in pairs(v.objects) do
+				local x,y = k.rectangle[1].x, k.rectangle[1].y
+				local w,h = k.rectangle[3].x-x, k.rectangle[3].y-y
+				table.insert(self.collisions, HC.rectangle(x,y,w,h))
+				self.collisions[#self.collisions].type = "enemy"
+			end
+		elseif v.type == "objectgroup" and v.name == "Collectibles" then
+			for j,k in pairs(v.objects) do
+				table.insert(self.collectibles, Collectible(k.name, k.x, k.y))
 			end
 		end
 	end
@@ -77,34 +100,44 @@ function Map:getRandomText()
 end
 
 function Map:update(dt)
-	if math.floor(self.time) % 2 == 0 and not STOPDIALOG then
-		if self.insertDialog then
-			local t = self:getRandomText()
-			local x,y = self:findDialogPosition(t)
-			table.insert(self.dialogboxes, Dialogbox(t, x,y))
-			self.insertDialog = false
-		end
-	else
-		self.insertDialog = true
+	if not self.player.gameover and self.player.y > self.map.height*self.map.tileheight+10 then
+		self.player:hurt(100)
 	end
+	if not self.player.gameover then
+		if math.floor(self.time) % 3 == 0 and not STOPDIALOG then
+			if self.insertDialog then
+				local t = self:getRandomText()
+				local x,y = self:findDialogPosition(t)
+				table.insert(self.dialogboxes, Dialogbox(t, x,y))
+				self.insertDialog = false
+			end
+		else
+			self.insertDialog = true
+		end
 
-	local dialogrunning = false
-	self.camera:setPosition(self.player:getPosition())
-	for i,v in pairs(self.dialogboxes) do
-		if not v.done then
-			dialogrunning = true
+		local dialogrunning = false
+		self.camera:setPosition(self.player:getPosition())
+		for i,v in lume.ripairs(self.dialogboxes) do
+			if not v.done then
+				dialogrunning = true
+			end
+			if v.remove == true then
+				table.remove(self.dialogboxes, i)
+			else
+				v:update(dt)
+			end
 		end
-		v:update(dt)
-	end
-	if not dialogrunning or true then
-		self.player:update(dt)
-		if self.player.wasMoving then
+		if not dialogrunning or true then
+			self.player:update(dt)
 			self.time = self.time + dt
+			for i,v in pairs(self.enemies) do
+				v:update(dt)
+			end
+			for i,v in pairs(self.collectibles) do
+				v:update(dt)
+			end
+			self.map:update(dt)
 		end
-		for i,v in pairs(self.enemies) do
-			v:update(dt)
-		end
-		self.map:update(dt)
 	end
 end
 
@@ -133,6 +166,9 @@ function Map:draw()
 		self.player:draw(l,t,w,h)
 
 		for i,v in pairs(self.enemies) do
+			v:draw()
+		end
+		for i,v in pairs(self.collectibles) do
 			v:draw()
 		end
 

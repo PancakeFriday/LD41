@@ -24,6 +24,7 @@ function Animation:new(spritesheet,w,h,row,numFrames,tbf)
 	self.mirror = 1
 
 	self.done = nil
+	self.looping = true
 end
 
 function Animation:setMirror(v)
@@ -32,7 +33,7 @@ end
 
 function Animation:update(dt)
 	local i = math.floor(self.time/self.tbf)%self.numFrames
-	if type(self.done) == "function" and i == 0 then
+	if type(self.done) == "function" and i == 0 and self.time/self.tbf >= self.numFrames then
 		self.done()
 	end
 	if not self.stopped then

@@ -5,17 +5,17 @@ Vector = require "vector"
 
 DEBUG = false
 
-local Player = require "player"
-local Map = require "map"
-
 FONT = {}
 for i=1,40 do
 	table.insert(FONT, love.graphics.newFont("font/LektonCode/LektonCode-Regular.ttf", i))
 	FONT[#FONT]:setFilter("nearest","nearest")
 end
 
+local Player = require "player"
+local Menu = require "menu"
+local Map = require "map"
+
 love.graphics.setDefaultFilter("nearest","nearest")
-love.graphics.setBackgroundColor(35/255,17/255,43/255)
 
 function love.graphics.printUnscaled(...)
 	local args = {...}
@@ -39,21 +39,40 @@ function string.ends(String,End)
 	return End=='' or string.sub(String,-string.len(End))==End
 end
 
+
 function love.load()
 	math.randomseed(os.time())
+	Map.loaded = false
+	Gamestate = "Menu"
 end
 
 function love.update(dt)
-	Map:update(dt)
+	if Gamestate == "Menu" then
+		Menu:update(dt)
+	elseif Gamestate == "Map" then
+		if not Map.loaded then
+			Map:loadLevel("map/level2.lua")
+		end
+		Map:update(dt)
+	end
 end
 
 function love.draw()
-	Map:draw()
+	if Gamestate == "Menu" then
+		Menu:draw()
+	elseif Gamestate == "Map" then
+		Map:draw()
+	end
 end
 
 function love.keypressed(key)
 	if key == "d" then
 		DEBUG = not DEBUG
 	end
-	Map:keypressed(key)
+
+	if Gamestate == "Menu" then
+		Menu:keypressed(key)
+	elseif Gamestate == "Map" then
+		Map:keypressed(key)
+	end
 end

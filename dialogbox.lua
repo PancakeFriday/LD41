@@ -45,12 +45,16 @@ function Dialogbox:new(text,x,y)
 	end
 
 	self.done = false
+	self.remove = false
 
 	self.canvas = love.graphics.newCanvas(love.graphics.getDimensions())
 end
 
 function Dialogbox:update(dt)
 	self.time = self.time + dt
+	if self.time > 20 then
+		self.remove = true
+	end
 	local numchars = math.floor((self.time)/TEXTSPEED)
 	if numchars >= self.text:len() then
 		self.done = true

@@ -132,11 +132,9 @@ function Player:move(mx,my,dt)
 		end
 	end
 
-	print("---")
 	self.bbox:move(0,my)
 	for i,v in pairs(HC.collisions(self.bbox)) do
 		if i.type == "map" or (i.type == "dialogbox" and my > 0 and i.damaged ~= true) then
-			print("yes")
 			self.bbox:move(0,-my)
 			my = 0
 			break

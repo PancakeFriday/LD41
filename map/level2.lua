@@ -1269,9 +1269,9 @@ return {
           visible = true,
           properties = {
             ["type"] = "warp",
-            ["warpto"] = "level2",
-            ["x"] = 10,
-            ["y"] = 1568
+            ["warpto"] = "test_ending",
+            ["x"] = 32,
+            ["y"] = 172
           }
         }
       }

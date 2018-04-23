@@ -659,9 +659,9 @@
   <object id="34" x="102" y="88" width="34" height="16">
    <properties>
     <property name="type" value="warp"/>
-    <property name="warpto" value="level2"/>
-    <property name="x" type="float" value="10"/>
-    <property name="y" type="float" value="1568"/>
+    <property name="warpto" value="test_ending"/>
+    <property name="x" type="float" value="32"/>
+    <property name="y" type="float" value="172"/>
    </properties>
   </object>
  </objectgroup>

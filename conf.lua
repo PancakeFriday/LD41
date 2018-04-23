@@ -6,7 +6,7 @@ function love.conf(t)
     t.externalstorage = false           -- True to save files (and read from the save directory) in external storage on Android (boolean) 
     t.gammacorrect = false              -- Enable gamma-correct rendering, when supported by the system (boolean)
  
-    t.window.title = "Untitled"         -- The window title (string)
+    t.window.title = "Where is turtle?"         -- The window title (string)
     t.window.icon = nil                 -- Filepath to an image to use as the window's icon (string)
 	-- minimum width is 860
     t.window.width = 200                -- The window width (number)

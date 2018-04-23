@@ -8,7 +8,7 @@ return {
   height = 14,
   tilewidth = 16,
   tileheight = 16,
-  nextobjectid = 177,
+  nextobjectid = 178,
   properties = {},
   tilesets = {
     {
@@ -1904,6 +1904,31 @@ return {
           y = 176,
           width = 32,
           height = 6,
+          rotation = 0,
+          visible = true,
+          properties = {}
+        }
+      }
+    },
+    {
+      type = "objectgroup",
+      name = "Door",
+      visible = true,
+      opacity = 1,
+      offsetx = 0,
+      offsety = 0,
+      draworder = "topdown",
+      properties = {},
+      objects = {
+        {
+          id = 177,
+          name = "",
+          type = "",
+          shape = "rectangle",
+          x = 6110,
+          y = 160,
+          width = 7,
+          height = 16,
           rotation = 0,
           visible = true,
           properties = {}

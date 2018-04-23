@@ -5,6 +5,8 @@ local Dialogbox = require "dialogbox"
 love.graphics.setBackgroundColor(0,0,0)
 
 function Menu:new()
+	self.bg = love.graphics.newImage("img/background.png")
+	self.bg:setFilter("nearest","nearest")
 	self.start = Dialogbox("Start game", 50, 80)
 	self.quit = Dialogbox("Quit", 110, 80)
 	self.title = love.graphics.newImage("img/titleimage.png")
@@ -28,6 +30,7 @@ end
 function Menu:draw()
 	love.graphics.push()
 	love.graphics.scale(4,4)
+	love.graphics.draw(self.bg)
 	love.graphics.translate(40,30)
 	love.graphics.draw(self.title,23,-10)
 	self.start:draw()

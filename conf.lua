@@ -9,7 +9,7 @@ function love.conf(t)
     t.window.title = "Untitled"         -- The window title (string)
     t.window.icon = nil                 -- Filepath to an image to use as the window's icon (string)
 	-- minimum width is 860
-    t.window.width = 1088                -- The window width (number)
+    t.window.width = 200                -- The window width (number)
 	-- minimum height is 576
     t.window.height = 640               -- The window height (number)
     t.window.borderless = false         -- Remove all border visuals from the window (boolean)

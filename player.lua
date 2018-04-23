@@ -54,8 +54,8 @@ function Player:new(collectibles)
 
 	self.falltime = 0
 
-	self.x = 20
-	self.y = 140
+	self.x = 5831--20
+	self.y = 160--140
 	self.floaty = 0
 
 	self.w = 16
@@ -101,6 +101,14 @@ function Player:new(collectibles)
 	self.gameover = false
 end
 
+function Player:reset(x,y)
+	self.x = x
+	self.y = y
+	self.bbox:moveTo(x,y)
+	self.health = Health(3)
+	self.warplevel = nil
+end
+
 function Player:getStencil()
 	love.graphics.setColor(1,1,1)
 	love.graphics.circle("fill",self.x,self.y,16)
@@ -117,12 +125,18 @@ function Player:move(mx,my,dt)
 		if i.type == "collectible" and not i.object.collected then
 			i.object.collected = true
 			self.audio_pickup:play()
+		elseif i.type == "ending" then
+			self.triggerending = true
+		elseif i.type == "warp" then
+			self.warplevel = i
 		end
 	end
 
+	print("---")
 	self.bbox:move(0,my)
 	for i,v in pairs(HC.collisions(self.bbox)) do
 		if i.type == "map" or (i.type == "dialogbox" and my > 0 and i.damaged ~= true) then
+			print("yes")
 			self.bbox:move(0,-my)
 			my = 0
 			break
@@ -206,6 +220,29 @@ function Player:hurt(x)
 		self.currentAnim:reset()
 		self.currentAnim:play()
 	end
+end
+
+function Player:sparseUpdate(dt)
+	self.time = self.time + dt*3
+	local mx, my = 0, 0
+
+	self.speedy = self.speedy + self.accely * dt
+	my = my + self.speedy * dt
+
+	if not self.jumping and not self.falling then
+		if mx < 0 then
+			self.currentAnim:setMirror(-1)
+		elseif mx > 0 then
+			self.currentAnim:setMirror(1)
+		end
+	end
+
+	self.floaty = (math.sin(self.time*4)-1.8)*1
+
+	my = math.min(my,3)
+
+	self:move(mx+self.momentumx*dt,my,dt)
+	self.currentAnim:update(dt)
 end
 
 function Player:update(dt)

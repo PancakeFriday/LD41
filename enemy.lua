@@ -317,6 +317,34 @@ function Snake:draw()
 	end
 end
 
+local Cat = Object:extend()
+
+function Cat:new(player,x,y)
+	self.x = x
+	self.y = y
+	self.animations = {
+		idle = Animation("img/cat.png",16,16,0,2,0.3),
+		walk = Animation("img/cat.png",16,16,1,4,0.3)
+	}
+	self.currentAnimation = self.animations["idle"]
+	self.currentAnimation:play()
+	self.iscat = true
+	self.walkdir = 0
+end
+
+function Cat:update(dt)
+	self.currentAnimation:update(dt)
+
+	self.x = self.x + self.walkdir * 20 * dt
+end
+
+function Cat:draw()
+	love.graphics.push()
+	love.graphics.translate(self.x, self.y)
+	self.currentAnimation:draw()
+	love.graphics.pop()
+end
+
 local Enemyfactory = Object:extend()
 
 function Enemyfactory:new()
@@ -328,6 +356,8 @@ function Enemyfactory:get(name,player,x,y)
 		return Dragon(player,x,y)
 	elseif name == "snake" then
 		return Snake(player,x,y)
+	elseif name == "cat" then
+		return Cat(player,x,y)
 	end
 end
 

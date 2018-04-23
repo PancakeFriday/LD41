@@ -1,14 +1,14 @@
 return {
   version = "1.1",
   luaversion = "5.1",
-  tiledversion = "1.1.4",
+  tiledversion = "1.1.2",
   orientation = "orthogonal",
   renderorder = "right-down",
   width = 390,
   height = 14,
   tilewidth = 16,
   tileheight = 16,
-  nextobjectid = 178,
+  nextobjectid = 181,
   properties = {},
   tilesets = {
     {
@@ -33,7 +33,7 @@ return {
       },
       properties = {},
       terrains = {},
-      tilecount = 1240,
+      tilecount = 620,
       tiles = {
         {
           id = 94,
@@ -1907,27 +1907,46 @@ return {
           rotation = 0,
           visible = true,
           properties = {}
-        }
-      }
-    },
-    {
-      type = "objectgroup",
-      name = "Door",
-      visible = true,
-      opacity = 1,
-      offsetx = 0,
-      offsety = 0,
-      draworder = "topdown",
-      properties = {},
-      objects = {
+        },
         {
-          id = 177,
+          id = 178,
           name = "",
           type = "",
           shape = "rectangle",
           x = 6110,
           y = 160,
           width = 7,
+          height = 16,
+          rotation = 0,
+          visible = true,
+          properties = {
+            ["type"] = "warp",
+            ["warpto"] = "level2",
+            ["x"] = 10,
+            ["y"] = 1568
+          }
+        },
+        {
+          id = 179,
+          name = "",
+          type = "",
+          shape = "rectangle",
+          x = 6107,
+          y = -11,
+          width = 26,
+          height = 171,
+          rotation = 0,
+          visible = true,
+          properties = {}
+        },
+        {
+          id = 180,
+          name = "",
+          type = "",
+          shape = "rectangle",
+          x = 6117,
+          y = 160,
+          width = 16,
           height = 16,
           rotation = 0,
           visible = true,

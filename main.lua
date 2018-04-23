@@ -51,7 +51,7 @@ function love.update(dt)
 		Menu:update(dt)
 	elseif Gamestate == "Map" then
 		if not Map.loaded then
-			Map:loadLevel("map/level2.lua")
+			Map:loadLevel("map/level1.lua")
 		end
 		Map:update(dt)
 	end

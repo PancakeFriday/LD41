@@ -430,19 +430,6 @@ return {
           properties = {}
         },
         {
-          id = 133,
-          name = "snake",
-          type = "",
-          shape = "rectangle",
-          x = 1264,
-          y = 191,
-          width = 16,
-          height = 15,
-          rotation = 0,
-          visible = true,
-          properties = {}
-        },
-        {
           id = 134,
           name = "snake",
           type = "",

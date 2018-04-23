@@ -8,7 +8,7 @@ return {
   height = 14,
   tilewidth = 16,
   tileheight = 16,
-  nextobjectid = 165,
+  nextobjectid = 171,
   properties = {},
   tilesets = {
     {
@@ -1776,6 +1776,96 @@ return {
           y = 143,
           width = 176,
           height = 11,
+          rotation = 0,
+          visible = true,
+          properties = {}
+        }
+      }
+    },
+    {
+      type = "objectgroup",
+      name = "Collectibles",
+      visible = true,
+      opacity = 1,
+      offsetx = 0,
+      offsety = 0,
+      draworder = "topdown",
+      properties = {},
+      objects = {
+        {
+          id = 165,
+          name = "1",
+          type = "",
+          shape = "rectangle",
+          x = 648,
+          y = 24,
+          width = 16,
+          height = 16,
+          rotation = 0,
+          visible = true,
+          properties = {}
+        },
+        {
+          id = 166,
+          name = "2",
+          type = "",
+          shape = "rectangle",
+          x = 1936,
+          y = 176,
+          width = 16,
+          height = 16,
+          rotation = 0,
+          visible = true,
+          properties = {}
+        },
+        {
+          id = 167,
+          name = "3",
+          type = "",
+          shape = "rectangle",
+          x = 2664,
+          y = 0,
+          width = 16,
+          height = 16,
+          rotation = 0,
+          visible = true,
+          properties = {}
+        },
+        {
+          id = 168,
+          name = "4",
+          type = "",
+          shape = "rectangle",
+          x = 3032,
+          y = 160,
+          width = 16,
+          height = 16,
+          rotation = 0,
+          visible = true,
+          properties = {}
+        },
+        {
+          id = 169,
+          name = "5",
+          type = "",
+          shape = "rectangle",
+          x = 4648,
+          y = 160,
+          width = 16,
+          height = 16,
+          rotation = 0,
+          visible = true,
+          properties = {}
+        },
+        {
+          id = 170,
+          name = "6",
+          type = "",
+          shape = "rectangle",
+          x = 5520,
+          y = 12,
+          width = 16,
+          height = 16,
           rotation = 0,
           visible = true,
           properties = {}

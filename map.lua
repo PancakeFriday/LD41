@@ -23,9 +23,15 @@ function Map:new()
 
 	self.camera = Gamera.new(0, 0, 1,1)
 	self.camera:setScale(4)
+
+	self.img_win = love.graphics.newImage("img/win.png")
+	self.img_win:setFilter("nearest","nearest")
+	self.img_lose = love.graphics.newImage("img/lose.png")
+	self.img_lose:setFilter("nearest","nearest")
 end
 
 function Map:loadLevel(n,player,x,y)
+	self.curlevel = n
 	if player then
 		for i,v in pairs(self.collisions) do
 			HC.remove(v)
@@ -117,6 +123,9 @@ function Map:getRandomText()
 end
 
 function Map:update(dt)
+	if self.curlevel == "map/level1.lua" and self.time == 0 then
+		table.insert(self.dialogboxes, Dialogbox("Darn, my cat named turtle went missing. You gotta help my find her! Just... don't stop walking...", 20, 120))
+	end
 	if self.player.warplevel then
 		local w = self.player.warplevel
 		self:loadLevel("map/".. w.warpto ..".lua",self.player,w.x,w.y)
@@ -195,21 +204,46 @@ function Map:update(dt)
 				cat.currentAnimation = cat.animations["walk"]
 				cat.currentAnimation:play()
 				cat.currentAnimation:setMirror(1)
+				self.win = true
+				self.endtimer = 0
 			else
 				t = "Too bad you didn't find all my toys. See ya some other time, maybe you'll manage then..."
 				cat.walkdir = 1
 				cat.currentAnimation = cat.animations["walk"]
 				cat.currentAnimation:play()
 				cat.currentAnimation:setMirror(-1)
+				self.lose = true
+				self.endtimer = 0
 			end
 			table.insert(self.dialogboxes, Dialogbox(t, catx-100, caty-40))
 		end
+		self.endtimer = self.endtimer + dt
 		self.endingtime = self.endingtime + dt
 	end
 end
 
+function Map:stencilfun()
+	love.graphics.setColor(1,1,1)
+	love.graphics.circle("fill", self.player.x, self.player.y, self.time*400)
+end
+
 function Map:draw()
 	self.camera:draw(function(l,t,w,h,par)
+		--self:stencilfun()
+		love.graphics.stencil(function() return self:stencilfun() end, "replace", 1)
+		love.graphics.setStencilTest("greater", 0)
+
+		if self.win then
+			local winw, winh = love.graphics.getDimensions()
+			local imgw = self.img_win:getWidth()
+			love.graphics.draw(self.img_win, l+winw/8-imgw/2,t+30)
+		end
+		if self.lose then
+			local winw, winh = love.graphics.getDimensions()
+			local imgw = self.img_win:getWidth()
+			love.graphics.draw(self.img_lose, l+winw/8-imgw/2,t+30)
+		end
+
 		for i,v in pairs(self.map.layers) do
 			if v.type == "tilelayer" and v.name:starts("par-") then
 				local num = tonumber(v.name:sub(5,5))
@@ -245,7 +279,8 @@ function Map:draw()
 					love.graphics.stencil(function() self.player:getStencil() end, "replace", 1)
 					love.graphics.setStencilTest("less", 1)
 					self.map:drawTileLayer(i)
-					love.graphics.setStencilTest()
+					love.graphics.stencil(function() return self:stencilfun() end, "replace", 1)
+					love.graphics.setStencilTest("greater", 0)
 				else
 					self.map:drawTileLayer(i)
 				end
@@ -269,12 +304,17 @@ function Map:draw()
 end
 
 function Map:keypressed(key)
+	if (self.win or self.lose) and self.endtimer > 3 then
+		self.win = nil
+		self.lose = nil
+		love.load()
+	end
 	if not self.player.triggerending then
 		self.player:keypressed(key)
 	end
-	if key == "s" then
-		STOPDIALOG = not STOPDIALOG
-	end
+	--if key == "s" then
+		--STOPDIALOG = not STOPDIALOG
+	--end
 end
 
 return Map()

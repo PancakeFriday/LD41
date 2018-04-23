@@ -66,9 +66,9 @@ function love.draw()
 end
 
 function love.keypressed(key)
-	if key == "d" then
-		DEBUG = not DEBUG
-	end
+	--if key == "d" then
+		--DEBUG = not DEBUG
+	--end
 
 	if Gamestate == "Menu" then
 		Menu:keypressed(key)

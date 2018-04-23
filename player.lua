@@ -54,8 +54,8 @@ function Player:new(collectibles)
 
 	self.falltime = 0
 
-	self.x = 5831--20
-	self.y = 160--140
+	self.x = 20
+	self.y = 175
 	self.floaty = 0
 
 	self.w = 16
@@ -223,6 +223,7 @@ end
 function Player:sparseUpdate(dt)
 	self.time = self.time + dt*3
 	local mx, my = 0, 0
+	self.momentumx = 0
 
 	self.speedy = self.speedy + self.accely * dt
 	my = my + self.speedy * dt
@@ -297,7 +298,7 @@ function Player:draw(l,t,w,h)
 	self.health:draw(l,t,w,h)
 	local winw, winh = love.graphics.getDimensions()
 	for i,v in pairs(self.collectibles) do
-		v:draw_ui(winw/4+l-(i-1)*16,t,w,h)
+		v:draw_ui(winw/4+l-(i)*16,t,w,h)
 	end
 
 	if DEBUG then
